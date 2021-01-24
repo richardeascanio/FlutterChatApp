@@ -78,6 +78,7 @@ class _FormState extends State<_Form> {
           CustomRaisedButton(
             text: 'Aceptar',
             onPressed: () {
+              print(nameCtrl.text);
               print(emailCtrl.text);
               print(passCtrl.text);
             },
