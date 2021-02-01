@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:chat_app/services/auth_service.dart';
+import 'package:chat_app/services/socket_service.dart';
+import 'package:chat_app/services/users_service.dart';
+
 import 'package:chat_app/models/user.dart';
 
 class UsersPage extends StatefulWidget {
@@ -14,17 +17,22 @@ class UsersPage extends StatefulWidget {
 
 class _UsersPageState extends State<UsersPage> {
 
+  final usersService = new UsersService();
   RefreshController _refreshController = RefreshController(initialRefresh: false);
-  final users = [
-    User(uid: '1', name: 'Catalina', email: 'cata@mail.com', online: true),
-    User(uid: '2', name: 'George', email: 'george@mail.com', online: false),
-    User(uid: '3', name: 'Tommy', email: 'thomas@mail.com', online: true),
-  ];
+  
+  List<User> users = [];
+
+  @override
+  void initState() { 
+    super.initState();
+    this._loadUsers();
+  }
   
   @override
   Widget build(BuildContext context) {
 
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
     final user = authService.user;
 
     return Scaffold(
@@ -36,7 +44,7 @@ class _UsersPageState extends State<UsersPage> {
         leading: IconButton(
           icon: Icon(Icons.exit_to_app, color: Colors.black87,),
           onPressed: () {
-
+            socketService.disconnect();
             Navigator.pushReplacementNamed(context, 'login');
             AuthService.deleteToken();
 
@@ -45,8 +53,9 @@ class _UsersPageState extends State<UsersPage> {
         actions: [
           Container(
             margin: EdgeInsets.only(right: 3),
-            child: Icon(Icons.check_circle, color: Colors.blue[400],),
-            // child: Icon(Icons.offline_bolt, color: Colors.red,),
+            child: (socketService.serverStatus == ServerStatus.Online)
+            ? Icon(Icons.check_circle, color: Colors.blue[400])
+            : Icon(Icons.offline_bolt, color: Colors.red)
           )
         ],
       ),
@@ -96,7 +105,11 @@ class _UsersPageState extends State<UsersPage> {
   }
 
   _loadUsers() async {
-    await Future.delayed(Duration(milliseconds: 1000));
+    // await Future.delayed(Duration(milliseconds: 1000));
+
+    this.users = await usersService.getUsers();
+    setState(() {});
+
     _refreshController.refreshCompleted();
   }
 }
