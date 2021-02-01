@@ -1,9 +1,12 @@
-import 'package:chat_app/widgets/custom_raised_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:chat_app/widgets/labels_widget.dart';
 import 'package:chat_app/widgets/logo_widget.dart';
 import 'package:chat_app/widgets/custom_input.dart';
+import 'package:chat_app/widgets/custom_raised_button.dart';
+import 'package:chat_app/helpers/show_alert.dart';
+import 'package:chat_app/services/auth_service.dart';
 
 class RegisterPage extends StatelessWidget {
   @override
@@ -51,6 +54,7 @@ class _FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Container(
       margin: EdgeInsets.only(top: 40.0),
       padding: EdgeInsets.symmetric(horizontal: 50.0),
@@ -76,11 +80,16 @@ class _FormState extends State<_Form> {
             isPassword: true,
           ),
           CustomRaisedButton(
-            text: 'Aceptar',
-            onPressed: () {
-              print(nameCtrl.text);
-              print(emailCtrl.text);
-              print(passCtrl.text);
+            text: 'Crear cuenta',
+            onPressed: authService.authenticating ? null : () async {
+              FocusScope.of(context).unfocus();
+              final registerOk = await authService.register(nameCtrl.text.trim(), emailCtrl.text.trim(), passCtrl.text.trim());
+
+              if (registerOk == true) {
+                Navigator.pushReplacementNamed(context, 'users');
+              } else {
+                showAlert(context, 'Registro incorrecto', registerOk);
+              }
             },
           )
 

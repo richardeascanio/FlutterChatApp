@@ -81,8 +81,8 @@ class _FormState extends State<_Form> {
 
               if (loginOk) {
                 // Logged successfully
-
-              } {
+                Navigator.pushReplacementNamed(context, 'users');
+              } else {
                 // Show alert
                 showAlert(context, 'Login incorrecto', 'Revise sus credenciales nuevamente');
               }
