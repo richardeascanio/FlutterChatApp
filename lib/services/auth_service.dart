@@ -54,7 +54,6 @@ class AuthService with ChangeNotifier {
 
     );
 
-    print(resp.body);
     this.authenticating = false;
     if (resp.statusCode == 200) {
       final loginResponse = loginResponseFromJson(resp.body);
@@ -88,7 +87,6 @@ class AuthService with ChangeNotifier {
 
     );
 
-    print(resp.body);
     this.authenticating = false;
     if (resp.statusCode == 200) {
       final registerResponse = loginResponseFromJson(resp.body);
@@ -114,7 +112,6 @@ class AuthService with ChangeNotifier {
       }
     );
 
-    print(resp.body);
     if (resp.statusCode == 200) {
       final loginResponse = loginResponseFromJson(resp.body);
       this.user = loginResponse.user;
